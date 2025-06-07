@@ -2,8 +2,11 @@ services:
   - type: web
     name: vehicle-frontend
     env: node
-    buildCommand: cd vehicle && npm install && npm run build
-    staticPublishPath: vehicle/dist
+    rootDir: vehicle
+    buildCommand: |
+      npm install
+      npm run build
+    staticPublishPath: dist
     routes:
       - type: rewrite
         source: /*
