@@ -116,6 +116,131 @@ const translations = {
     financing: 'Easy Financing',
     financingDesc: 'We offer flexible financing options with competitive interest rates and minimal documentation.',
     chatOnWhatsapp: 'Chat on WhatsApp',
+
+    // Additional Admin Dashboard Translations
+    addNewBikeDesc: 'Add a new bike to our collection',
+    manageBikesDesc: 'Manage and update existing bikes',
+    activeListings: 'Active Listings',
+    bikeAdded: 'Bike Added',
+    bikeDeleted: 'Bike Deleted',
+    errorOccurred: 'An error occurred',
+    tryAgain: 'Try Again',
+    save: 'Save',
+    update: 'Update',
+    edit: 'Edit',
+    confirm: 'Confirm',
+    success: 'Success',
+    error: 'Error',
+    warning: 'Warning',
+    info: 'Info',
+    
+    // Form Labels and Placeholders
+    enterBikeName: 'Enter Bike Name',
+    enterPrice: 'Enter Price',
+    selectBrand: 'Select Brand',
+    selectModel: 'Select Model',
+    enterYear: 'Enter Year',
+    enterDescription: 'Enter Description',
+    enterFeatures: 'Enter Features',
+    enterSpecifications: 'Enter Specifications',
+    enterOwnerName: 'Enter Owner Name',
+    enterPhoneNumber: 'Enter Phone Number',
+    enterWhatsappNumber: 'Enter WhatsApp Number',
+    
+    // Validation Messages
+    required: 'This field is required',
+    invalidPrice: 'Enter a valid price',
+    invalidYear: 'Enter a valid year',
+    invalidPhone: 'Enter a valid phone number',
+    minImages: 'Minimum 3 images are required',
+    maxImages: 'Maximum 5 images allowed',
+    imageSize: 'Image size must be less than 5MB',
+    imageFormat: 'Image must be in JPG, PNG or WEBP format',
+    
+    // Status Messages
+    processing: 'Processing...',
+    uploading: 'Uploading...',
+    saving: 'Saving...',
+    updating: 'Updating...',
+    deleting: 'Deleting...',
+    successMessage: 'Operation Successful',
+    errorMessage: 'Operation Failed',
+    
+    // Navigation and UI
+    back: 'Back',
+    next: 'Next',
+    previous: 'Previous',
+    close: 'Close',
+    open: 'Open',
+    searchAction: 'Search',
+    filter: 'Filter',
+    sort: 'Sort',
+    refresh: 'Refresh',
+    download: 'Download',
+    upload: 'Upload',
+    preview: 'Preview',
+    submit: 'Submit',
+    reset: 'Reset',
+    
+    // Common Actions
+    view: 'View',
+    editAction: 'Edit',
+    deleteAction: 'Delete',
+    add: 'Add',
+    remove: 'Remove',
+    select: 'Select',
+    deselect: 'Deselect',
+    enable: 'Enable',
+    disable: 'Disable',
+    show: 'Show',
+    hide: 'Hide',
+    
+    // Time and Date
+    today: 'Today',
+    yesterday: 'Yesterday',
+    thisWeek: 'This Week',
+    thisMonth: 'This Month',
+    lastMonth: 'Last Month',
+    custom: 'Custom',
+    
+    // File Operations
+    chooseFile: 'Choose File',
+    dragAndDrop: 'Drag and Drop',
+    fileTooLarge: 'File too large',
+    invalidFileType: 'Invalid file type',
+    uploadSuccess: 'Upload Successful',
+    uploadFailed: 'Upload Failed',
+    
+    // Error Messages
+    networkError: 'Network Error',
+    serverError: 'Server Error',
+    sessionExpired: 'Session Expired',
+    unauthorized: 'Unauthorized',
+    forbidden: 'Forbidden',
+    notFound: 'Not Found',
+    validationError: 'Validation Error',
+    
+    // Success Messages
+    changesSaved: 'Changes Saved',
+    profileUpdated: 'Profile Updated',
+    settingsUpdated: 'Settings Updated',
+    passwordChanged: 'Password Changed',
+    accountCreated: 'Account Created',
+    accountDeleted: 'Account Deleted',
+    
+    // Confirmation Messages
+    confirmDelete: 'Are you sure you want to delete?',
+    confirmLogout: 'Are you sure you want to logout?',
+    confirmDiscard: 'Are you sure you want to discard changes?',
+    confirmCancel: 'Are you sure you want to cancel?',
+    
+    // Help and Support
+    help: 'Help',
+    support: 'Support',
+    faq: 'Frequently Asked Questions',
+    contactSupport: 'Contact Support',
+    reportIssue: 'Report Issue',
+    feedback: 'Feedback',
   },
   te: {
     // Navigation
@@ -261,7 +386,6 @@ const translations = {
     manageBikesDesc: 'ఉన్న బైక్‌లను నిర్వహించండి మరియు నవీకరించండి',
     activeListings: 'యాక్టివ్ లిస్టింగ్‌లు',
     bikeAdded: 'బైక్ జోడించబడింది',
-    bikeUpdated: 'బైక్ నవీకరించబడింది',
     bikeDeleted: 'బైక్ తొలగించబడింది',
     errorOccurred: 'లోపం సంభవించింది',
     tryAgain: 'మళ్లీ ప్రయత్నించండి',
@@ -312,7 +436,7 @@ const translations = {
     previous: 'మునుపటి',
     close: 'మూసివేయండి',
     open: 'తెరవండి',
-    search: 'వెతకండి',
+    searchAction: 'వెతకండి',
     filter: 'ఫిల్టర్',
     sort: 'క్రమబద్ధీకరించు',
     refresh: 'రిఫ్రెష్',
@@ -324,8 +448,8 @@ const translations = {
     
     // Common Actions
     view: 'వీక్షించండి',
-    edit: 'సవరించండి',
-    delete: 'తొలగించండి',
+    editAction: 'సవరించండి',
+    deleteAction: 'తొలగించండి',
     add: 'జోడించండి',
     remove: 'తీసేయండి',
     select: 'ఎంచుకోండి',
