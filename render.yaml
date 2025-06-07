@@ -3,11 +3,16 @@ services:
     name: vehicle-app
     env: static
     rootDir: vehicle
-    buildCommand: npm install && npm run build
+    buildCommand: |
+      export NODE_VERSION=18.17.0
+      npm install
+      npm run build
     staticPublishPath: dist
     envVars:
       - key: NODE_VERSION
         value: 18.17.0
+      - key: NPM_VERSION
+        value: 9.6.7
     routes:
       - type: rewrite
         source: /*
