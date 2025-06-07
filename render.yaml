@@ -1,16 +1,14 @@
 services:
   - type: web
-    name: vehicle-frontend
-    env: node
+    name: vehicle-app
+    env: static
     rootDir: vehicle
-    buildCommand: |
-      npm install
-      npm run build
+    buildCommand: npm install && npm run build
     staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
     routes:
       - type: rewrite
         source: /*
-        destination: /index.html
-    envVars:
-      - key: NODE_VERSION
-        value: 18 
+        destination: /index.html 
