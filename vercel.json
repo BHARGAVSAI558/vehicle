@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd vehicle && npm install && npm run build",
+  "outputDirectory": "vehicle/dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+} 
