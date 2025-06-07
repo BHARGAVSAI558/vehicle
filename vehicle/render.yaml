@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: vehicle-frontend
+    env: node
+    rootDir: vehicle
+    buildCommand: |
+      npm install
+      npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: 18 
