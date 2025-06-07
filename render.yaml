@@ -2,12 +2,13 @@ services:
   - type: web
     name: vehicle-app
     env: static
-    rootDir: vehicle
+    rootDir: .
     buildCommand: |
+      cd vehicle
       export NODE_VERSION=18.17.0
       npm install
       npm run build
-    staticPublishPath: dist
+    staticPublishPath: vehicle/dist
     envVars:
       - key: NODE_VERSION
         value: 18.17.0
