@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { adminService } from '../../services/adminService';
+import { toast } from 'react-hot-toast';
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
   const { t } = useLanguage();
@@ -19,15 +21,18 @@ export default function AdminLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+    setLoading(true);
     
     try {
       // First check if server is reachable
       try {
-        await axios.get('http://localhost:2027/admin/vehiclecount');
+        await adminService.getVehicleCount();
         console.log('Server is reachable');
       } catch (error) {
         console.error('Server connection test failed:', error.message);
         setMessage('Cannot connect to server. Please check if the backend is running.');
+        toast.error('Server connection failed');
+        setLoading(false);
         return;
       }
 
@@ -36,12 +41,16 @@ export default function AdminLogin() {
       
       if (!result.success) {
         setMessage(result.error || 'Invalid Username or Password');
+        toast.error(result.error || 'Invalid Username or Password');
       } else {
         navigate('/admin');
       }
     } catch (error) {
       console.error('Login error:', error);
       setMessage('Login failed. Please try again.');
+      toast.error('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
