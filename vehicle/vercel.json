@@ -16,6 +16,6 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://vehicle-backend-558.onrender.com"
+    "VITE_API_URL": "https://springbootvehicleproject.up.railway.app"
   }
 } 
