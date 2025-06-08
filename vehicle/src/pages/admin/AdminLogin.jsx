@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { adminService } from '../../services/adminService';
+import { toast } from 'react-hot-toast';
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login, isAdminLoggedIn } = useAuth();
   const { t } = useLanguage();
@@ -24,22 +26,25 @@ export default function AdminLogin() {
   }, [isAdminLoggedIn, navigate]);
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+    setLoading(true);
     
     try {
       // First check if server is reachable
       try {
-        await axios.get('http://localhost:2027/admin/vehiclecount');
+        await adminService.getVehicleCount();
         console.log('Server is reachable');
       } catch (error) {
         console.error('Server connection test failed:', error.message);
         setMessage('Cannot connect to server. Please check if the backend is running.');
+        toast.error('Server connection failed');
+        setLoading(false);
         return;
       }
 
@@ -48,11 +53,14 @@ export default function AdminLogin() {
       
       if (!result.success) {
         setMessage(result.error || 'Invalid Username or Password');
+        toast.error(result.error || 'Invalid Username or Password');
       }
-      // Navigation is handled by the useEffect hook when isAdminLoggedIn changes
     } catch (error) {
       console.error('Login error:', error);
       setMessage('Login failed. Please try again.');
+      toast.error('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,10 +88,12 @@ export default function AdminLogin() {
               <input
                 type="text"
                 id="username"
+                name="username"
                 value={formData.username}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full px-4 py-2.5 rounded-md border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                disabled={loading}
+                className="mt-1 block w-full px-4 py-2.5 rounded-md border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm disabled:opacity-50"
                 placeholder={t('username')}
               />
             </div>
@@ -95,19 +105,22 @@ export default function AdminLogin() {
               <input
                 type="password"
                 id="password"
+                name="password"
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full px-4 py-2.5 rounded-md border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                disabled={loading}
+                className="mt-1 block w-full px-4 py-2.5 rounded-md border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm disabled:opacity-50"
                 placeholder={t('password')}
               />
             </div>
 
             <button
               type="submit"
-              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+              disabled={loading}
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {t('login')}
+              {loading ? 'Signing in...' : t('login')}
             </button>
           </form>
 
