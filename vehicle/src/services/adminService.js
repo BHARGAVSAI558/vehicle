@@ -2,104 +2,126 @@ import axios from 'axios';
 
 const API_URL = 'https://springbootvehicleproject.up.railway.app';
 
-
-// Create axios instance with timeout
+// Create axios instance with timeout and default JSON headers
 const axiosInstance = axios.create({
-    baseURL: API_URL,
-    timeout: 5000, // 5 seconds timeout
-    headers: {
-        'Content-Type': 'application/json'
-    }
+  baseURL: API_URL,
+  timeout: 5000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Add response interceptor for better error handling
+// Request logging interceptor (for debugging)
+axiosInstance.interceptors.request.use((request) => {
+  if (request.data instanceof FormData) {
+    // Log FormData keys and file info (not full contents)
+    const entries = Array.from(request.data.entries()).map(([k, v]) =>
+      v instanceof File
+        ? `${k}: File(${v.name}, ${v.type}, ${v.size} bytes)`
+        : `${k}: ${v}`
+    );
+    console.log('Request FormData:', entries);
+  } else {
+    console.log('Request Data:', request.data);
+  }
+  return request;
+});
+
+// Response interceptor with improved error handling
 axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
-            throw new Error('Unable to connect to server. Please make sure the backend server is running.');
-        }
-        if (error.response) {
-            // Server responded with error status
-            throw new Error(error.response.data?.message || `Server error: ${error.response.status}`);
-        }
-        if (error.request) {
-            // Request made but no response
-            throw new Error('No response from server. Please try again later.');
-        }
-        // Other errors
-        throw new Error(error.message || 'An unexpected error occurred');
+  (response) => {
+    console.log('Response:', {
+      status: response.status,
+      data: response.data,
+    });
+    return response;
+  },
+  (error) => {
+    if (error.response) {
+      const errMsg =
+        error.response.data?.message ||
+        error.response.data?.error ||
+        `Server error: ${error.response.status}`;
+      console.error('Server Error:', errMsg);
+      return Promise.reject(new Error(errMsg));
+    } else if (error.request) {
+      console.error('No response from server:', error.message);
+      return Promise.reject(
+        new Error('No response from server. Please try again later.')
+      );
+    } else {
+      console.error('Error setting up request:', error.message);
+      return Promise.reject(new Error(error.message));
     }
+  }
 );
 
 export const adminService = {
-    // Admin login
-    login: async (credentials) => {
-        try {
-            const response = await axiosInstance.post('/admin/checkadminlogin', credentials);
-            if (response.data) {
-                return { success: true, data: response.data };
-            } else {
-                throw new Error("Invalid credentials");
-            }
-        } catch (error) {
-            console.error('Error logging in:', error);
-            throw error;
-        }
-    },
-
-    // Add vehicle
-    addVehicle: async (vehicle) => {
-        try {
-            const response = await axiosInstance.post('/admin/addvehicle', vehicle);
-            return response.data;
-        } catch (error) {
-            console.error('Error adding vehicle:', error);
-            throw error;
-        }
-    },
-
-    // Get all vehicles
-    getAllVehicles: async () => {
-        try {
-            const response = await axiosInstance.get('/admin/viewallvehicles');
-            return response.data;
-        } catch (error) {
-            console.error('Error getting vehicles:', error);
-            throw error;
-        }
-    },
-
-    // Delete vehicle
-    deleteVehicle: async (vid) => {
-        try {
-            const response = await axiosInstance.delete(`/admin/deletevehicle?vid=${vid}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error deleting vehicle:', error);
-            throw error;
-        }
-    },
-
-    // Get vehicle count
-    getVehicleCount: async () => {
-        try {
-            const response = await axiosInstance.get('/admin/vehiclecount');
-            return response.data;
-        } catch (error) {
-            console.error('Error getting vehicle count:', error);
-            throw error;
-        }
-    },
-
-    // Get vehicle by ID
-    getVehicleById: async (vid) => {
-        try {
-            const response = await axiosInstance.get(`/admin/displayvehiclebyid/${vid}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error getting vehicle:', error);
-            throw error;
-        }
+  // Admin login
+  login: async (credentials) => {
+    try {
+      const response = await axiosInstance.post('/admin/checkadminlogin', credentials);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('Login error:', error.message);
+      throw error;
     }
-}; 
+  },
+
+  // Add vehicle (multipart/form-data)
+  addVehicle: async (formData) => {
+    try {
+      const response = await axiosInstance.post('/admin/addvehicle', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Add vehicle error:', error.message);
+      throw error;
+    }
+  },
+
+  // Get all vehicles
+  getAllVehicles: async () => {
+    try {
+      const response = await axiosInstance.get('/admin/viewallvehicles');
+      return response.data;
+    } catch (error) {
+      console.error('Get all vehicles error:', error.message);
+      throw error;
+    }
+  },
+
+  // Delete vehicle by ID
+  deleteVehicle: async (vid) => {
+    try {
+      const response = await axiosInstance.delete(`/admin/deletevehicle?vid=${vid}`);
+      return response.data;
+    } catch (error) {
+      console.error('Delete vehicle error:', error.message);
+      throw error;
+    }
+  },
+
+  // Get vehicle count
+  getVehicleCount: async () => {
+    try {
+      const response = await axiosInstance.get('/admin/vehiclecount');
+      return response.data;
+    } catch (error) {
+      console.error('Get vehicle count error:', error.message);
+      throw error;
+    }
+  },
+
+  // Get vehicle by ID
+  getVehicleById: async (vid) => {
+    try {
+      const response = await axiosInstance.get(`/admin/displayvehiclebyid/${vid}`);
+      return response.data;
+    } catch (error) {
+      console.error('Get vehicle by ID error:', error.message);
+      throw error;
+    }
+  },
+};
