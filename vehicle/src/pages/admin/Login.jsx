@@ -14,7 +14,7 @@ export default function AdminLogin() {
   const { t } = useLanguage();
 
   const handleChange = (e) => {
-    const { id, valune } = e.target;
+    const { id, value } = e.target; // Fixed typo here
     setFormData({ ...formData, [id]: value });
   };
 
@@ -24,7 +24,7 @@ export default function AdminLogin() {
     setLoading(true);
     
     try {
-      // First check if server is reachable
+      // Check if server is reachable
       try {
         await adminService.getVehicleCount();
         console.log('Server is reachable');
@@ -103,9 +103,10 @@ export default function AdminLogin() {
 
             <button
               type="submit"
-              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+              disabled={loading}
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50"
             >
-              {t('login')}
+              {loading ? t('loading') : t('login')}
             </button>
           </form>
 
@@ -121,4 +122,4 @@ export default function AdminLogin() {
       </div>
     </div>
   );
-} 
+}
