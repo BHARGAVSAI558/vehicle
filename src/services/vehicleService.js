@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2027';
+const API_URL = 'https://springbootvehicleproject.up.railway.app/';
 
 // Create axios instance with timeout
 const axiosInstance = axios.create({
