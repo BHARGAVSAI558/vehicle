@@ -5,12 +5,17 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    target: 'esnext',
+    target: 'es2015',
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'query-vendor': ['@tanstack/react-query'],
+          'ui-vendor': ['@headlessui/react', '@heroicons/react'],
         },
       },
     },
@@ -20,16 +25,28 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['@tanstack/react-query'],
+    include: [
+      '@tanstack/react-query',
+      '@headlessui/react',
+      '@heroicons/react',
+      'react-router-dom'
+    ],
     esbuildOptions: {
-      target: 'esnext'
+      target: 'es2015'
     }
   },
   resolve: {
     dedupe: ['@tanstack/react-query'],
     mainFields: ['module', 'jsnext:main', 'jsnext', 'browser', 'main']
   },
-  ssr: {
-    noExternal: ['@tanstack/react-query']
+  server: {
+    port: 5173,
+    strictPort: true,
+    host: true
+  },
+  preview: {
+    port: 5173,
+    strictPort: true,
+    host: true
   }
 })
