@@ -1,6 +1,9 @@
 const config = {
-  // This will be updated when backend is deployed
-  url: import.meta.env.VITE_API_URL || "https://your-backend-url.com"
+  // Backend URL from Railway deployment
+  url: "https://springbootvehicleproject.up.railway.app",
+  // Add any other config values here
+  apiTimeout: 10000, // 10 seconds timeout
+  maxRetries: 3
 };
- 
+
 export default config; 

@@ -1,95 +1,104 @@
 import { useState } from "react";
 import "./admin.css";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from '../contexts/LanguageContext';
+import { adminService } from '../services/adminService';
+import { toast } from 'react-hot-toast';
 import image from "../assets/main.png";
 import { Link } from "react-router-dom";
 
-export default function AdminLogin() {
+const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { setIsAdminLoggedIn } = useAuth();
+  const { login } = useAuth();
+  const { t } = useLanguage();
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-    setError("");
+    setLoading(true);
     
     try {
-      const response = await axios.post(
-        "http://localhost:2027/admin/checkadminlogin",
-        formData
-      );
+      // First check if server is reachable
+      try {
+        await adminService.getVehicleCount();
+        console.log('Server is reachable');
+      } catch (error) {
+        console.error('Server connection test failed:', error.message);
+        setMessage("Cannot connect to server. Please check if the backend is running.");
+        toast.error("Server connection failed");
+        setLoading(false);
+        return;
+      }
+
+      // Try to login using the auth context
+      const result = await login(formData.username, formData.password);
       
-      if (response.data) {  // Changed from response.status === 200
-        setIsAdminLoggedIn(true);
-        localStorage.setItem('isAdminLoggedIn', 'true');
-        navigate("/adminhome");
-      } else {
-        setMessage("Invalid Username or Password");
+      if (!result.success) {
+        setMessage(result.error || "Invalid Username or Password");
+        toast.error(result.error || "Invalid Username or Password");
       }
     } catch (error) {
-      if (error.response?.status === 401) {
-        setMessage("Invalid Username or Password");
-      } else {
-        setMessage("Login failed: " + (error.response?.data || "An unexpected error occurred"));
-      }
+      console.error("Login error:", error);
+      setMessage("Login failed. Please try again.");
+      toast.error("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
-      <div className="image-section">
-        <img src={image} alt="Admin Illustration" />
+      <div className="login-image">
+        <img src={image} alt="Login" />
       </div>
-      <div className="login-form">
-        <h2>
-          <span className="signin-text">Admin</span>&nbsp;
-          <span className="signup-text">Login</span>
-        </h2>
-        {message && <p className="message">{message}</p>}
+      <div className="login-form-container">
+        <h2>Admin Login</h2>
+        {message && <div className="error-message">{message}</div>}
         <form onSubmit={handleSubmit}>
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-          />
-
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-
-          <div className="options">
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <input type="checkbox" id="remember" />
-              <label htmlFor="remember">Remember me</label>
-            </div>
-            <a href="#" className="forgot-password">Forgot Password?</a>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              disabled={loading}
+            />
           </div>
-
-          <button type="submit" className="signin-button">Login</button>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              disabled={loading}
+            />
+          </div>
+          <button type="submit" className="signin-button" disabled={loading}>
+            {loading ? 'Signing in...' : 'Login'}
+          </button>
         </form>
         <p className="signup-link">
-          Not an Admin? <Link to="/">Back to Home</Link>
+          Not an admin? <Link to="/">Back to Home</Link>
         </p>
       </div>
     </div>
   );
-} 
+};
+
+export default Login; 
