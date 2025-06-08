@@ -1,116 +1,52 @@
 import axios from 'axios';
 import config from '../config';
 
-// Create axios instance with timeout
+const API_URL = config.url;
+
+// Create axios instance with config timeout
 const axiosInstance = axios.create({
-    baseURL: config.url,
+    baseURL: API_URL,
     timeout: config.apiTimeout,
     headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Content-Type': 'application/json'
     }
 });
 
-// Add request interceptor for logging
-axiosInstance.interceptors.request.use(request => {
-    console.log('Making request to:', `${config.url}${request.url}`);
-    return request;
-});
-
-// Add response interceptor for better error handling
-axiosInstance.interceptors.response.use(
-    (response) => {
-        console.log('Response received:', response.status);
-        return response;
-    },
-    (error) => {
-        if (error.code === 'ECONNABORTED') {
-            console.error('Request timeout');
-            throw new Error('Request timed out. Please try again.');
-        }
-        
-        if (!error.response) {
-            console.error('Network error:', error.message);
-            throw new Error('Network error. Please check your internet connection.');
-        }
-
-        // Handle specific HTTP errors
-        switch (error.response.status) {
-            case 401:
-                throw new Error('Unauthorized. Please login again.');
-            case 403:
-                throw new Error('Access forbidden.');
-            case 404:
-                throw new Error('Resource not found.');
-            case 500:
-                throw new Error('Server error. Please try again later.');
-            default:
-                throw new Error(error.response.data?.message || 'An error occurred');
-        }
+// Update the retryRequest function to use config values
+const retryRequest = async (fn, retries = config.maxRetries, delay = 1000) => {
+    try {
+        return await fn();
+    } catch (error) {
+        if (retries === 0) throw error;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return retryRequest(fn, retries - 1, delay * 2);
     }
-);
+};
 
-export const vehicleService = {
-    // Get all vehicles
-    getAllVehicles: async () => {
-        try {
-            const response = await axiosInstance.get('/vehicle/viewallvehicles');
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching vehicles:', error);
-            throw error;
-        }
-    },
+// Update the addVehicle method to use a longer timeout for file uploads
+const addVehicle = async (formData) => {
+    try {
+        const cleanFormData = new FormData();
+        // ... existing FormData handling code ...
 
-    // Get vehicle by ID
-    getVehicleById: async (id) => {
-        try {
-            const response = await axiosInstance.get(`/vehicle/displayvehiclebyid/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching vehicle:', error);
-            throw error;
-        }
-    },
+        const response = await axiosInstance.post('/vehicle/addvehicle', cleanFormData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Accept': 'application/json'
+            },
+            timeout: 60000, // Keep 60 seconds for file uploads
+            onUploadProgress: (progressEvent) => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                console.log('Upload progress:', percentCompleted + '%');
+            }
+        });
 
-    // Add vehicle
-    addVehicle: async (formData) => {
-        try {
-            const response = await axiosInstance.post('/vehicle/addvehicle', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error adding vehicle:', error);
-            throw error;
+        if (!response.data) {
+            throw new Error('No response data received from server');
         }
-    },
-
-    // Delete vehicle
-    deleteVehicle: async (id) => {
-        try {
-            const response = await axiosInstance.delete(`/vehicle/deletevehicle/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error deleting vehicle:', error);
-            throw error;
-        }
-    },
-
-    // Update vehicle
-    updateVehicle: async (id, formData) => {
-        try {
-            const response = await axiosInstance.put(`/vehicle/updatevehicle/${id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error updating vehicle:', error);
-            throw error;
-        }
+        return response.data;
+    } catch (error) {
+        console.error('Error adding vehicle:', error);
+        throw error;
     }
 }; 

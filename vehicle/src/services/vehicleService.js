@@ -1,13 +1,23 @@
 import axios from 'axios';
+<<<<<<< Updated upstream
 
 const API_URL = 'https://springbootvehicleproject.up.railway.app';
+=======
+import config from '../config';
+>>>>>>> Stashed changes
 
 // Create axios instance with 15 seconds timeout
 const axiosInstance = axios.create({
+<<<<<<< Updated upstream
     baseURL: API_URL,
     timeout: 15000, // increased from 5000 to 15000 (15 seconds)
+=======
+    baseURL: config.url,
+    timeout: config.apiTimeout,
+>>>>>>> Stashed changes
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
     }
 });
 
@@ -125,5 +135,118 @@ export const vehicleService = {
         return retryRequest(() => axiosInstance.get('/vehicle/viewallvehicles').then(res => res.data), 3, 2000);
     },
 
+<<<<<<< Updated upstream
     // Additional vehicleService methods here...
 };
+=======
+    // Get vehicle by ID
+    getVehicleById: async (id) => {
+        if (!id) {
+            throw new Error('Vehicle ID is required');
+        }
+
+        // Convert to number to ensure it's a valid ID
+        const vehicleId = Number(id);
+        if (isNaN(vehicleId)) {
+            throw new Error('Invalid vehicle ID format');
+        }
+
+        try {
+            console.log('Fetching vehicle with ID:', vehicleId);
+            // Update to use the correct endpoint from the backend controller
+            const response = await axiosInstance.get(`/vehicle/displayvehiclebyid?id=${vehicleId}`);
+            console.log('Vehicle data:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching vehicle:', {
+                id: vehicleId,
+                error: error.message,
+                response: error.response?.data
+            });
+
+            if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
+                throw new Error('Unable to connect to server. Please make sure the backend server is running on port 2027');
+            }
+            throw error;
+        }
+    },
+
+    // Get vehicles by brand
+    getVehiclesByBrand: async (brand) => {
+        try {
+            const response = await axiosInstance.get(`/vehicle/viewvehiclesbybrand/${brand}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching vehicles by brand:', error);
+            throw error;
+        }
+    },
+
+    // Delete vehicle
+    deleteVehicle: async (vid) => {
+        if (!vid) {
+            throw new Error('Vehicle ID is required');
+        }
+        
+        // Convert to number to ensure it's a valid ID
+        const vehicleId = Number(vid);
+        if (isNaN(vehicleId)) {
+            throw new Error('Invalid vehicle ID format');
+        }
+
+        try {
+            console.log('Deleting vehicle with ID:', vehicleId);
+            const response = await axiosInstance.delete(`/admin/deletevehicle?vid=${vehicleId}`);
+            console.log('Delete response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting vehicle:', {
+                id: vid,
+                error: error.message,
+                response: error.response?.data
+            });
+            throw error;
+        }
+    },
+
+    // Delete all vehicles
+    deleteAllVehicles: async () => {
+        try {
+            const response = await axiosInstance.delete('/admin/deleteallvehicles');
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting all vehicles:', error);
+            throw error;
+        }
+    },
+
+    // Get vehicle images
+    getVehicleImages: (vid) => {
+        if (!vid) {
+            console.error('getVehicleImages called with undefined vid');
+            return '/placeholder-bike.png';
+        }
+        
+        // Convert to number to ensure it's a valid ID
+        const vehicleId = Number(vid);
+        if (isNaN(vehicleId)) {
+            console.error('getVehicleImages called with invalid vid:', vid);
+            return '/placeholder-bike.png';
+        }
+
+        console.log('Getting image for vehicle:', vehicleId);
+        return `${config.url}/vehicle/displayvehicleimage?id=${vehicleId}`;
+    },
+
+    // Get vehicle count
+    getVehicleCount: async () => {
+        try {
+            const response = await axiosInstance.get('/vehicle/count');
+            return response.data;
+        } catch (error) {
+            console.error('Error getting vehicle count:', error);
+            throw error;
+        }
+    }
+}; 
+>>>>>>> Stashed changes

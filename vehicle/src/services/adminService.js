@@ -1,14 +1,27 @@
 import axios from 'axios';
+<<<<<<< Updated upstream
 
 const API_URL = 'https://springbootvehicleproject.up.railway.app';
+=======
+import config from '../config';
+>>>>>>> Stashed changes
 
 // Create axios instance with timeout and default JSON headers
 const axiosInstance = axios.create({
+<<<<<<< Updated upstream
   baseURL: API_URL,
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
   },
+=======
+    baseURL: config.url,
+    timeout: config.apiTimeout,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+>>>>>>> Stashed changes
 });
 
 // Request logging interceptor (for debugging)
